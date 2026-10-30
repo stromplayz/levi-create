@@ -24,6 +24,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <cctype>
 
 namespace lc::cmd {
 

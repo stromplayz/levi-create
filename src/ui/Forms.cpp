@@ -16,6 +16,8 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <vector>
+#include <cctype>
 
 namespace lc::forms {
 
@@ -35,34 +37,34 @@ bool validModelName(std::string const& n) {
 
 // --- CustomForm result helpers -------------------------------------------
 
-std::uint64_t const* getUint(CustomFormResult const& res, std::string const& name) {
+std::uint64_t const* getUint(ll::form::CustomFormResult const& res, std::string const& name) {
     if (!res) return nullptr;
     auto it = res->find(name);
     if (it == res->end()) return nullptr;
     return std::get_if<std::uint64_t>(&it->second);
 }
 
-double const* getDouble(CustomFormResult const& res, std::string const& name) {
+double const* getDouble(ll::form::CustomFormResult const& res, std::string const& name) {
     if (!res) return nullptr;
     auto it = res->find(name);
     if (it == res->end()) return nullptr;
     return std::get_if<double>(&it->second);
 }
 
-std::string const* getString(CustomFormResult const& res, std::string const& name) {
+std::string const* getString(ll::form::CustomFormResult const& res, std::string const& name) {
     if (!res) return nullptr;
     auto it = res->find(name);
     if (it == res->end()) return nullptr;
     return std::get_if<std::string>(&it->second);
 }
 
-bool getBool(CustomFormResult const& res, std::string const& name) {
+bool getBool(ll::form::CustomFormResult const& res, std::string const& name) {
     if (auto* u = getUint(res, name)) return *u != 0;
     if (auto* d = getDouble(res, name)) return *d != 0.0;
     return false;
 }
 
-std::optional<double> getNumber(CustomFormResult const& res, std::string const& name) {
+std::optional<double> getNumber(ll::form::CustomFormResult const& res, std::string const& name) {
     if (auto* d = getDouble(res, name)) return *d;
     if (auto* u = getUint(res, name)) return static_cast<double>(*u);
     return std::nullopt;
@@ -196,7 +198,7 @@ void openTransformMenu(Player& player) {
         "§7Scale: 0.5 = half size, 2 = double size (nearest sampling).\n"
         "§7These are in-place transforms; the original area is cleared. §o/vc undo§r§7 restores."
     );
-    form.sendTo(player, [](Player& p, CustomFormResult const& res, FormCancelReason) {
+    form.sendTo(player, [](Player& p, ll::form::CustomFormResult const& res, FormCancelReason) {
         if (!res) return;
         auto const* op = getUint(res, "op");
         if (!op) return;
@@ -282,7 +284,7 @@ void openPasteMenu(Player& player) {
         f.appendDropdown("pitch", "Pitch", {"0", "90", "-90", "180"});
         f.appendToggle("includeAir", "Also paste air (carve out)", false);
         f.appendLabel("§7Pasted centered on you, at your feet level.");
-        f.sendTo(p, [](Player& pl, CustomFormResult const& res, FormCancelReason) {
+        f.sendTo(p, [](Player& pl, ll::form::CustomFormResult const& res, FormCancelReason) {
             if (!res) return;
             Clipboard* cl = ops::clipboardOf(pl);
             if (!cl) return;
@@ -406,7 +408,7 @@ void openLibraryMenu(Player& player) {
     form.appendButton("Save selection to library…", [](Player& p) {
         ll::form::CustomForm f("§l§5Save model§r");
         f.appendInput("name", "Model name", "letters, digits, _ or -");
-        f.sendTo(p, [](Player& pl, CustomFormResult const& res, FormCancelReason) {
+        f.sendTo(p, [](Player& pl, ll::form::CustomFormResult const& res, FormCancelReason) {
             if (!res) return;
             auto const* name = getString(res, "name");
             if (!name || !validModelName(*name)) {
@@ -447,8 +449,8 @@ void openLibraryMenu(Player& player) {
                 ll::form::ModalForm confirm(
                     "§cDelete " + name + "?", "This permanently deletes the saved model.", "§cDelete", "Cancel"
                 );
-                confirm.sendTo(pl, [name](Player& p2, ModalFormResult r, FormCancelReason) {
-                    if (r && *r == ModalFormSelectedButton::Upper) {
+                confirm.sendTo(pl, [name](Player& p2, ll::form::ModalFormResult r, FormCancelReason) {
+                    if (r && *r == ll::form::ModalFormSelectedButton::Upper) {
                         std::error_code ec2;
                         auto file = LeviCreate::getInstance().modelFile(name);
                         if (std::filesystem::remove(file, ec2)) {
