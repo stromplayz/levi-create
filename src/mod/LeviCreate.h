@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ll/api/event/Listener.h"
+#include "ll/api/event/command/ServerCommandRegisterEvent.h"
 #include "ll/api/event/player/PlayerInteractBlockEvent.h"
 #include "ll/api/mod/NativeMod.h"
 
@@ -34,7 +35,8 @@ public:
 private:
     ll::mod::NativeMod& mSelf;
     PlayerStateMap      mStates;
-    std::shared_ptr<ll::event::Listener<ll::event::PlayerInteractBlockEvent>> mWandListener;
+    std::shared_ptr<ll::event::Listener<ll::event::PlayerInteractBlockEvent>>   mWandListener;
+    std::shared_ptr<ll::event::Listener<ll::event::ServerCommandRegisterEvent>> mCommandRegisterListener;
 };
 
 } // namespace lc

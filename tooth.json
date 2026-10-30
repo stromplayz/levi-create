@@ -1,0 +1,51 @@
+{
+    "format_version": 3,
+    "format_uuid": "289f771f-2c9a-4d73-9f3f-8492495a924d",
+    "tooth": "github.com/stromplayz/levi-create",
+    "version": "0.2.0",
+    "info": {
+        "name": "LeviCreate",
+        "description": "Voxel building toolkit for LeviLamina (Chisel & Bits + Axiom style): custom voxel models, any-degree rotation, 1/16 tiny builds, move/copy/paste, undo and a full form UI.",
+        "tags": [
+            "platform:levilamina",
+            "type:mod"
+        ],
+        "avatar_url": "https://avatars.githubusercontent.com/u/74851011"
+    },
+    "variants": [
+        {
+            "label": "",
+            "platform": "win-x64",
+            "dependencies": {
+                "github.com/LiteLDev/LeviLamina": "26.51.*"
+            },
+            "assets": [
+                {
+                    "type": "zip",
+                    "urls": [
+                        "https://{{tooth}}/releases/download/v{{version}}/levi-create-server-windows-x64.zip"
+                    ],
+                    "placements": [
+                        {
+                            "type": "dir",
+                            "src": "levi-create/",
+                            "dest": "mods/levi-create/"
+                        }
+                    ]
+                }
+            ],
+            "preserve_files": [],
+            "remove_files": [],
+            "scripts": {
+                "pre_install": [],
+                "install": [],
+                "post_install": [],
+                "pre_pack": [],
+                "post_pack": [],
+                "pre_uninstall": [],
+                "uninstall": [],
+                "post_uninstall": []
+            }
+        }
+    ]
+}

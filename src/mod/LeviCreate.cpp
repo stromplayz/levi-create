@@ -36,6 +36,7 @@ bool LeviCreate::load() {
 
 bool LeviCreate::enable() {
     using ll::event::PlayerInteractBlockEvent;
+    using ll::event::ServerCommandRegisterEvent;
 
     // Wand tool: iron axe. Sneak + right-click sets pos #1, plain right-click sets pos #2.
     mWandListener = ll::event::EventBus::getInstance().emplaceListener<PlayerInteractBlockEvent>(
@@ -68,6 +69,12 @@ bool LeviCreate::enable() {
         }
     );
 
+    // Register commands when the server (re)builds its command registry — the
+    // documented pattern. Also register right now so hot-enabling works;
+    // getOrCreateCommand is idempotent, so double registration is safe.
+    mCommandRegisterListener = ll::event::EventBus::getInstance().emplaceListener<ServerCommandRegisterEvent>(
+        [](ServerCommandRegisterEvent&) { cmd::registerCommands(); }
+    );
     cmd::registerCommands();
 
     getSelf().getLogger().info("levi-create enabled. Use /vc help or /vc menu in game.");
@@ -79,6 +86,11 @@ bool LeviCreate::disable() {
         ll::event::EventBus::getInstance()
             .removeListener<ll::event::PlayerInteractBlockEvent>(mWandListener);
         mWandListener.reset();
+    }
+    if (mCommandRegisterListener) {
+        ll::event::EventBus::getInstance()
+            .removeListener<ll::event::ServerCommandRegisterEvent>(mCommandRegisterListener);
+        mCommandRegisterListener.reset();
     }
     getSelf().getLogger().info("levi-create disabled.");
     return true;

@@ -78,7 +78,11 @@ bool validModelName(std::string const& n) {
     return true;
 }
 
+} // namespace (helpers)
+
 // ---- param structs (reflection-based command parameters) ----------------
+// NOTE: these MUST have external linkage (named namespace) — the command
+// system's boost::pfr reflection rejects anonymous-namespace types.
 
 struct PasteParams {
     float scale;
@@ -120,8 +124,6 @@ struct DeleteParams {
 struct MiniParams {
     int factor;
 };
-
-} // namespace
 
 void registerCommands() {
     auto& cmd = ll::command::CommandRegistrar::getServerInstance().getOrCreateCommand(
