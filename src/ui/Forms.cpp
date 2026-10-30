@@ -198,7 +198,7 @@ void openTransformMenu(Player& player) {
         "§7Scale: 0.5 = half size, 2 = double size (nearest sampling).\n"
         "§7These are in-place transforms; the original area is cleared. §o/vc undo§r§7 restores."
     );
-    form.sendTo(player, [](Player& p, ll::form::CustomFormResult const& res, FormCancelReason) {
+    form.sendTo(player, [](Player& p, ll::form::CustomFormResult const& res, ll::form::FormCancelReason) {
         if (!res) return;
         auto const* op = getUint(res, "op");
         if (!op) return;
@@ -284,7 +284,7 @@ void openPasteMenu(Player& player) {
         f.appendDropdown("pitch", "Pitch", {"0", "90", "-90", "180"});
         f.appendToggle("includeAir", "Also paste air (carve out)", false);
         f.appendLabel("§7Pasted centered on you, at your feet level.");
-        f.sendTo(p, [](Player& pl, ll::form::CustomFormResult const& res, FormCancelReason) {
+        f.sendTo(p, [](Player& pl, ll::form::CustomFormResult const& res, ll::form::FormCancelReason) {
             if (!res) return;
             Clipboard* cl = ops::clipboardOf(pl);
             if (!cl) return;
@@ -408,7 +408,7 @@ void openLibraryMenu(Player& player) {
     form.appendButton("Save selection to library…", [](Player& p) {
         ll::form::CustomForm f("§l§5Save model§r");
         f.appendInput("name", "Model name", "letters, digits, _ or -");
-        f.sendTo(p, [](Player& pl, ll::form::CustomFormResult const& res, FormCancelReason) {
+        f.sendTo(p, [](Player& pl, ll::form::CustomFormResult const& res, ll::form::FormCancelReason) {
             if (!res) return;
             auto const* name = getString(res, "name");
             if (!name || !validModelName(*name)) {
@@ -449,7 +449,7 @@ void openLibraryMenu(Player& player) {
                 ll::form::ModalForm confirm(
                     "§cDelete " + name + "?", "This permanently deletes the saved model.", "§cDelete", "Cancel"
                 );
-                confirm.sendTo(pl, [name](Player& p2, ll::form::ModalFormResult r, FormCancelReason) {
+                confirm.sendTo(pl, [name](Player& p2, ll::form::ModalFormResult r, ll::form::FormCancelReason) {
                     if (r && *r == ll::form::ModalFormSelectedButton::Upper) {
                         std::error_code ec2;
                         auto file = LeviCreate::getInstance().modelFile(name);
