@@ -1,0 +1,74 @@
+name: Build levi-create
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        target_type:
+          - server
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so `git describe --tags` can resolve the mod version
+
+      - uses: xmake-io/github-action-setup-xmake@v1
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/AppData/Local/.xmake
+          key: xmake-${{ hashFiles('xmake.lua') }}
+          restore-keys: |
+            xmake-
+
+      - name: Setup LLVM (clang-cl)
+        uses: ZhongRuoyu/setup-llvm@v0
+        with:
+          llvm-version: 22
+
+      - name: Update package repositories
+        run: xmake repo -u
+
+      - name: Configure
+        run: xmake f -a x64 -m release -p windows --target_type=${{ matrix.target_type }} -y
+
+      - name: Build
+        run: xmake -y
+
+      - name: Upload packed mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: levi-create-${{ github.sha }}-server-windows-x64
+          path: |
+            bin/
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download packed mod
+        uses: actions/download-artifact@v4
+        with:
+          name: levi-create-${{ github.sha }}-server-windows-x64
+          path: pack
+
+      - name: Pack levipack zip
+        run: |
+          cd pack
+          zip -r ../levi-create-server-windows-x64.zip .
+          cd ..
+          ls -la
+
+      - name: Attach levipack to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: levi-create-server-windows-x64.zip

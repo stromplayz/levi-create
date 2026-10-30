@@ -1,0 +1,7 @@
+{
+    "name": "levi-create",
+    "entry": "${modFile}",
+    "version": "${modVersion}",
+    "type": "native",
+    "platform": "${modPlatform}"
+}

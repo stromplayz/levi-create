@@ -1,0 +1,21 @@
+# xmake build directories
+.xmake/
+build/
+bin/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+
+# Build artifacts
+*.dll
+*.pdb
+*.lib
+*.exp
+*.so
+
+# OS
+Thumbs.db
+.DS_Store
